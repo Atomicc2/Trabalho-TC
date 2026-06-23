@@ -6,8 +6,8 @@ public class Estado {
     private boolean eInicial;
     private boolean eFinal;
 
-    public Estado(String id, String nome, boolean eInicial, boolean eFinal) {
-        this.id = Integer.parseInt(id);
+    public Estado(int id, String nome, boolean eInicial, boolean eFinal) {
+        this.id = id;
         this.nome = nome;
         this.eInicial = eInicial;
         this.eFinal = eFinal;

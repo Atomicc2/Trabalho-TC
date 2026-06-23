@@ -1,14 +1,13 @@
 package entities;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Transicao {
     private int de;
     private int para;
-    private List<Integer> aoLer = new ArrayList<>();
+    private List<String> aoLer;
 
-    public Transicao(int de, int para, List<Integer> aoLer) {
+    public Transicao(int de, int para, List<String> aoLer) {
         this.de = de;
         this.para = para;
         this.aoLer = aoLer;
@@ -30,7 +29,7 @@ public class Transicao {
         this.para = para;
     }
 
-    public List<Integer> getAoLer() {
+    public List<String> getAoLer() {
         return aoLer;
     }
 }
