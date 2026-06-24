@@ -137,9 +137,9 @@ public class Program {
                 para.setTextContent(String.valueOf(t.getPara()));
                 transicao.appendChild(para);
 
-                Element aoLer = doc.createElement("read");
-                aoLer.setTextContent(t.getAoLer());
-                transicao.appendChild(aoLer);
+                Element simbolo = doc.createElement("read");
+                simbolo.setTextContent(t.getSimbolo());
+                transicao.appendChild(simbolo);
 
                 automato.appendChild(transicao);
             }

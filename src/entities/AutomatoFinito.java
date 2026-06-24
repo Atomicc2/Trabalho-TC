@@ -8,12 +8,12 @@ import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class AutomatoFinito {
     private List<Estado> estados = new ArrayList<>();
     private List<Transicao> transicoes = new ArrayList<>();
+    private Set<String> alfabeto = new HashSet<>();
 
     public AutomatoFinito() {
     }
@@ -51,15 +51,48 @@ public class AutomatoFinito {
 
                 NodeList readNos = elemento.getElementsByTagName("read");
 
-                String aoLer = readNos.item(0).getTextContent();
+                String simbolo = readNos.item(0).getTextContent();
+                alfabeto.add(simbolo);
 
-                transicoes.add(new Transicao(de, para, aoLer));
+                transicoes.add(new Transicao(de, para, simbolo));
             }
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro ao ler o arquivo .jff:\n" + e.getMessage(),
                     "Erro", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    public boolean isAFD() {
+        for (int i = 0; i < transicoes.size(); i++) {
+            Transicao transicao = transicoes.get(i);
+
+            for (int j = i + 1; j < transicoes.size(); j++) {
+                if (transicao.getDe() == transicoes.get(j).getDe() && transicao.getSimbolo().equals(transicoes.get(j).getSimbolo()))
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean isCompleto() {
+
+        for (Estado estado : estados) {
+
+            Set<String> copiaAlfabeto = new HashSet<>(alfabeto);
+
+            for (Transicao transicao : transicoes) {
+                if (transicao.getDe() == estado.getId())
+                    copiaAlfabeto.remove(transicao.getSimbolo());
+            }
+
+            if (!copiaAlfabeto.isEmpty())
+                return false;
+
+        }
+
+        return true;
     }
 
     public List<Estado> getEstados() {

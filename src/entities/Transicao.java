@@ -5,12 +5,12 @@ import java.util.List;
 public class Transicao {
     private int de;
     private int para;
-    private String aoLer;
+    private String simbolo;
 
-    public Transicao(int de, int para, String aoLer) {
+    public Transicao(int de, int para, String simbolo) {
         this.de = de;
         this.para = para;
-        this.aoLer = aoLer;
+        this.simbolo = simbolo;
     }
 
     public int getDe() {
@@ -29,11 +29,11 @@ public class Transicao {
         this.para = para;
     }
 
-    public String getAoLer() {
-        return aoLer;
+    public String getSimbolo() {
+        return simbolo;
     }
 
-    public void setAoLer(String aoLer) {
-        this.aoLer = aoLer;
+    public void setSimbolo(String simbolo) {
+        this.simbolo = simbolo;
     }
 }
