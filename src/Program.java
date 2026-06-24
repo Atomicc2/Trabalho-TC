@@ -42,16 +42,17 @@ public class Program {
             List<File> arquivosEntrada = selecionarArquivosEntrada(operacao);
             if (arquivosEntrada == null) continue;
 
-            processarOperacao(operacao, arquivosEntrada);
+            if (processarOperacao(operacao, arquivosEntrada)) {
 
-            File destino = seletorArquivos.selecionarDestino(null);
-            if (destino == null) continue;
+                File destino = seletorArquivos.selecionarDestino(null);
+                if (destino == null) continue;
 
-            salvarResultado(destino);
+                salvarResultado(destino);
 
-            JOptionPane.showMessageDialog(null,
-                    "Arquivo salvo em:\n" + destino.getAbsolutePath(),
-                    "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null,
+                        "Arquivo salvo em:\n" + destino.getAbsolutePath(),
+                        "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            }
         }
     }
 
@@ -73,14 +74,22 @@ public class Program {
         }
     }
 
-    private void processarOperacao(Operacao operacao, List<File> arquivosEntrada) {
-        if (operacao == Operacao.COMPLEMENTO) {
-            resultadoFinal = OperacoesAutomato.complemento(arquivosEntrada.getFirst());
+    private boolean processarOperacao(Operacao operacao, List<File> arquivosEntrada) {
+        try {
+
+            if (operacao == Operacao.COMPLEMENTO) {
+                resultadoFinal = OperacoesAutomato.complemento(arquivosEntrada.getFirst());
+            }
+            return true;
+
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
 
-        System.out.println("[Aplicacao] processarOperacao chamado.");
-        System.out.println("  Operação  : " + operacao.getDescricao());
-        System.out.println("  Arquivos  : " + arquivosEntrada);
+//        System.out.println("[Aplicacao] processarOperacao chamado.");
+//        System.out.println("  Operação  : " + operacao.getDescricao());
+//        System.out.println("  Arquivos  : " + arquivosEntrada);
     }
 
     private void salvarResultado(File arquivoDestino) {
