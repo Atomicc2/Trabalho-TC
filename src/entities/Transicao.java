@@ -5,9 +5,9 @@ import java.util.List;
 public class Transicao {
     private int de;
     private int para;
-    private List<String> aoLer;
+    private String aoLer;
 
-    public Transicao(int de, int para, List<String> aoLer) {
+    public Transicao(int de, int para, String aoLer) {
         this.de = de;
         this.para = para;
         this.aoLer = aoLer;
@@ -29,7 +29,11 @@ public class Transicao {
         this.para = para;
     }
 
-    public List<String> getAoLer() {
+    public String getAoLer() {
         return aoLer;
+    }
+
+    public void setAoLer(String aoLer) {
+        this.aoLer = aoLer;
     }
 }

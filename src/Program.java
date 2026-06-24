@@ -1,14 +1,28 @@
+import entities.AutomatoFinito;
+import entities.Estado;
+import entities.OperacoesAutomato;
+import entities.Transicao;
 import gui.JanelaInicial;
 import gui.SeletorArquivos;
 import gui.enums.Operacao;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Program {
 
+    private AutomatoFinito resultadoFinal;
     private final SeletorArquivos seletorArquivos = new SeletorArquivos();
 
     public static void main(String[] args) {
@@ -18,32 +32,27 @@ public class Program {
     private void iniciar() {
         configurarLookAndFeel();
 
-        Operacao operacao = escolherOperacao();
-        if (operacao == null) {
-            encerrar("Nenhuma operação foi selecionada. Encerrando.");
-            return;
+        while (true) {
+            Operacao operacao = escolherOperacao();
+            if (operacao == null) {
+                encerrar("Nenhuma operação foi selecionada. Encerrando.");
+                return;
+            }
+
+            List<File> arquivosEntrada = selecionarArquivosEntrada(operacao);
+            if (arquivosEntrada == null) continue;
+
+            processarOperacao(operacao, arquivosEntrada);
+
+            File destino = seletorArquivos.selecionarDestino(null);
+            if (destino == null) continue;
+
+            salvarResultado(destino);
+
+            JOptionPane.showMessageDialog(null,
+                    "Arquivo salvo em:\n" + destino.getAbsolutePath(),
+                    "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         }
-
-        List<File> arquivosEntrada = selecionarArquivosEntrada(operacao);
-        if (arquivosEntrada == null) {
-            return;
-        }
-
-        processarOperacao(operacao, arquivosEntrada);
-
-        File destino = seletorArquivos.selecionarDestino(null);
-        if (destino == null) {
-            return;
-        }
-
-        salvarResultado(destino);
-
-        JOptionPane.showMessageDialog(
-                null,
-                "Fluxo concluído!\n\nArquivo de destino:\n" + destino.getAbsolutePath(),
-                "Sucesso",
-                JOptionPane.INFORMATION_MESSAGE
-        );
     }
 
     private Operacao escolherOperacao() {
@@ -65,7 +74,9 @@ public class Program {
     }
 
     private void processarOperacao(Operacao operacao, List<File> arquivosEntrada) {
-        if (operacao == Operacao.COMPLEMENTO)
+        if (operacao == Operacao.COMPLEMENTO) {
+            resultadoFinal = OperacoesAutomato.complemento(arquivosEntrada.getFirst());
+        }
 
         System.out.println("[Aplicacao] processarOperacao chamado.");
         System.out.println("  Operação  : " + operacao.getDescricao());
@@ -73,10 +84,80 @@ public class Program {
     }
 
     private void salvarResultado(File arquivoDestino) {
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
+            Document doc = builder.newDocument();
+
+            Element estrutura = doc.createElement("structure");
+            doc.appendChild(estrutura);
+
+            Element tipo = doc.createElement("type");
+            tipo.setTextContent("fa");
+            estrutura.appendChild(tipo);
+
+            Element automato = doc.createElement("automaton");
+
+            for (Estado e : resultadoFinal.getEstados()) {
+                Element estado = doc.createElement("state");
+
+                String id = String.valueOf(e.getId());
+                estado.setAttribute("id", id);
+
+                String nome = e.getNome();
+                estado.setAttribute("name", nome);
+
+                Element x = doc.createElement("x");
+                x.setTextContent(String.valueOf(100 * (e.getId() + 1)));
+                estado.appendChild(x);
+
+                Element y = doc.createElement("y");
+                y.setTextContent(String.valueOf(200));
+                estado.appendChild(y);
+
+                if (e.isInicial()) {
+                    Element inicial = doc.createElement("initial");
+                    estado.appendChild(inicial);
+                }
+                if (e.isFinal_()) {
+                    Element final_ = doc.createElement("final");
+                    estado.appendChild(final_);
+                }
+
+                automato.appendChild(estado);
+            }
+
+            for (Transicao t : resultadoFinal.getTransicoes()) {
+                Element transicao = doc.createElement("transition");
+
+                Element de = doc.createElement("from");
+                de.setTextContent(String.valueOf(t.getDe()));
+                transicao.appendChild(de);
+
+                Element para = doc.createElement("to");
+                para.setTextContent(String.valueOf(t.getPara()));
+                transicao.appendChild(para);
+
+                Element aoLer = doc.createElement("read");
+                aoLer.setTextContent(t.getAoLer());
+                transicao.appendChild(aoLer);
+
+                automato.appendChild(transicao);
+            }
+
+            estrutura.appendChild(automato);
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.transform(new DOMSource(doc), new StreamResult(arquivoDestino));
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro ao salvar o arquivo .jff:\n" + e.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+
 
         System.out.println("[Aplicacao] salvarResultado chamado.");
         System.out.println("  Destino: " + arquivoDestino.getAbsolutePath());
-        System.out.println("  (escrita do arquivo ainda não implementada)");
     }
 
     private void configurarLookAndFeel() {
