@@ -86,6 +86,10 @@ public class Program {
             if (operacao == Operacao.COMPLEMENTO) {
                 resultadoFinal = OperacoesAutomato.complemento(arquivosEntrada.getFirst());
             }
+
+            else if(operacao == Operacao.ESTRELA){
+                resultadoFinal = OperacoesAutomato.estrela(arquivosEntrada.getFirst());
+            }
             return true;
 
         } catch (IllegalArgumentException e) {
