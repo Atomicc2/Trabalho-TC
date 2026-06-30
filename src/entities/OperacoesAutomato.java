@@ -35,6 +35,7 @@ public class OperacoesAutomato {
         }
 
         int idAntigoInic = -1;
+        ArrayList<Integer> idAntigoFinal = new ArrayList<Integer>();
 
         for (Estado estado : automato.getEstados()) {
             if(estado.isInicial()){
@@ -44,21 +45,36 @@ public class OperacoesAutomato {
             }
         }
 
-        int idNovo = 0;
-
         for (Estado estado : automato.getEstados()) {
-            idNovo++;
+            if(estado.isFinal_()){
+                idAntigoFinal.add(estado.getId());
+                estado.setFinal_(false);
+            }
         }
 
-        Estado novoInicial = new Estado(idNovo, "novoInicial", true, true);
-        automato.getTransicoes().add(new Transicao(idNovo, idAntigoInic, ""));
-        automato.getEstados().add(novoInicial);
+        int idNovoInicio = 0;
 
         for (Estado estado : automato.getEstados()) {
-
-            if(estado.isFinal_()) {
-                automato.getTransicoes().add(new Transicao(estado.getId(), idAntigoInic, ""));
+            if (estado.getId() > idNovoInicio) {
+                idNovoInicio = estado.getId();
             }
+        }
+
+        idNovoInicio = idNovoInicio + 1;
+        int idNovoFinal = idNovoInicio + 1;
+
+        Estado novoInicial = new Estado(idNovoInicio, "novoInicial", true, false);
+        automato.getTransicoes().add(new Transicao(idNovoInicio, idAntigoInic, ""));
+        automato.getTransicoes().add(new Transicao(idNovoInicio, idNovoFinal, ""));
+        automato.getEstados().add(novoInicial);
+
+        Estado novoFinal = new Estado(idNovoFinal , "novoFinal", false, true);//não tem transição para ninguém;
+        //automato.getTransicoes().add(new Transicao(idNovoFinal, idNovoInicio, ""));
+        automato.getEstados().add(novoFinal);
+
+        for (int id : idAntigoFinal) {
+            automato.getTransicoes().add(new Transicao(id, idNovoFinal, ""));
+            automato.getTransicoes().add(new Transicao(id, idAntigoInic, ""));
         }
 
         return automato;
