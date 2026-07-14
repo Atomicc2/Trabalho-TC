@@ -1,0 +1,8 @@
+@startuml
+class Estado {
+  - int id
+  - String nome
+  - boolean inicial
+  - boolean final_
+}
+@enduml

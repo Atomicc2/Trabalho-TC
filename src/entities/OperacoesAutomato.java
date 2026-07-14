@@ -72,11 +72,6 @@ public class OperacoesAutomato {
         return automato;
     }
 
-    /**
-     * Diferença simétrica entre dois AFDs: L(A1) △ L(A2) = (L(A1) \ L(A2)) ∪ (L(A2) \ L(A1)).
-     * Implementada via construção de produto, marcando como finais
-     * os pares (q1, q2) em que exatamente um dos dois estados é final (XOR).
-     */
     public static AutomatoFinito diferencaSimetrica(File arquivo1, File arquivo2) {
         AutomatoFinito a1 = new AutomatoFinito(arquivo1);
         AutomatoFinito a2 = new AutomatoFinito(arquivo2);
@@ -92,7 +87,6 @@ public class OperacoesAutomato {
             a2.completarAutomato();
         }
 
-        // Alfabeto: união dos alfabetos dos dois autômatos.
         Set<String> alfabeto = new LinkedHashSet<>();
         for (Transicao t : a1.getTransicoes()) {
             if (t.getSimbolo() != null && !t.getSimbolo().isEmpty()) {
@@ -105,7 +99,6 @@ public class OperacoesAutomato {
             }
         }
 
-        // Localiza estados iniciais.
         Estado inicial1 = null;
         Estado inicial2 = null;
         for (Estado e : a1.getEstados()) {
@@ -120,11 +113,9 @@ public class OperacoesAutomato {
 
         AutomatoFinito resultado = new AutomatoFinito();
 
-        // Mapa de pares (id1, id2) -> Estado do produto (somente pares alcançáveis).
         Map<Long, Estado> mapaPares = new HashMap<>();
         int proximoId = 0;
 
-        // Cria estado inicial do produto.
         long chaveInicial = chavePar(inicial1.getId(), inicial2.getId());
         boolean finalInicial = inicial1.isFinal_() ^ inicial2.isFinal_();
         Estado estadoInicialProduto = new Estado(
@@ -136,7 +127,6 @@ public class OperacoesAutomato {
         mapaPares.put(chaveInicial, estadoInicialProduto);
         resultado.getEstados().add(estadoInicialProduto);
 
-        // BFS sobre os pares alcançáveis.
         Queue<int[]> fila = new LinkedList<>();
         fila.add(new int[]{inicial1.getId(), inicial2.getId()});
 
@@ -151,7 +141,6 @@ public class OperacoesAutomato {
                 int prox1 = buscarDestino(a1, id1, simbolo);
                 int prox2 = buscarDestino(a2, id2, simbolo);
 
-                // Em AFDs completos, sempre deve existir uma transição.
                 if (prox1 == -1 || prox2 == -1) {
                     throw new IllegalStateException(
                             "Transição ausente em autômato que deveria estar completo.");
@@ -185,7 +174,6 @@ public class OperacoesAutomato {
     }
 
     private static long chavePar(int id1, int id2) {
-        // Combina dois inteiros em uma chave long única.
         return ((long) id1 << 32) ^ (id2 & 0xFFFFFFFFL);
     }
 
