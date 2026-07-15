@@ -33,6 +33,23 @@ public class OperacoesAutomato {
         return automato;
     }
 
+    public static AutomatoFinito complemento(AutomatoFinito automato) {
+
+        if (!automato.isAFD()) {
+            throw new IllegalArgumentException("O autômato fornecido não é um AFD.");
+        }
+
+        if (!automato.isCompleto()) {
+            automato.completarAutomato();
+        }
+
+        for (Estado estado : automato.getEstados()) {
+            estado.setFinal_(!estado.isFinal_());
+        }
+
+        return automato;
+    }
+
     public static AutomatoFinito estrela(File arquivo){
         AutomatoFinito automato = new AutomatoFinito(arquivo);
 
@@ -186,6 +203,46 @@ public class OperacoesAutomato {
     public static AutomatoFinito interseccao(File arquivo1, File arquivo2) {
         AutomatoFinito a1 = new AutomatoFinito(arquivo1);
         AutomatoFinito a2 = new AutomatoFinito(arquivo2);
+
+        if (a1.temTransicaoVazia() || a2.temTransicaoVazia()) {
+            throw new IllegalArgumentException("A intersecção não aceita autômatos com transições vazias.");
+        }
+
+        List<Estado> estados1 = a1.getEstados();
+        List<Estado> estados2 = a2.getEstados();
+
+        List<Estado> novosEstados = new ArrayList<>();
+        List<Transicao> novasTransicoes = new ArrayList<>();
+
+        for (int i = 0; i < estados1.size(); i++) {
+            for (int j = 0; j < estados2.size(); j++) {
+                Estado p = estados1.get(i);
+                Estado q = estados2.get(j);
+
+                int novoId = i * estados2.size() + j;
+                String novoNome = p.getNome() + "," + q.getNome();
+                boolean novoInicial = p.isInicial() && q.isInicial();
+                boolean novoFinal = p.isFinal_() && q.isFinal_();
+
+                novosEstados.add(new Estado(novoId, novoNome, novoInicial, novoFinal));
+            }
+        }
+
+        for (Transicao t1 : a1.getTransicoes()) {
+            for (Transicao t2 : a2.getTransicoes()) {
+                if (t1.getSimbolo().equals(t2.getSimbolo())) {
+                    int novoDe = a1.idDoPar(a2, t1.getDe(), t2.getDe());
+                    int novoPara = a1.idDoPar(a2, t1.getPara(), t2.getPara());
+
+                    novasTransicoes.add(new Transicao(novoDe, novoPara, t1.getSimbolo()));
+                }
+            }
+        }
+
+        return new AutomatoFinito(novosEstados, novasTransicoes);
+    }
+
+    public static AutomatoFinito interseccao(AutomatoFinito a1, AutomatoFinito a2) {
 
         if (a1.temTransicaoVazia() || a2.temTransicaoVazia()) {
             throw new IllegalArgumentException("A intersecção não aceita autômatos com transições vazias.");
