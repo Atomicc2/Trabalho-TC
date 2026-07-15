@@ -73,107 +73,6 @@ public class OperacoesAutomato {
         return automato;
     }
 
-//    public static AutomatoFinito diferencaSimetrica(File arquivo1, File arquivo2) {
-//        AutomatoFinito a1 = new AutomatoFinito(arquivo1);
-//        AutomatoFinito a2 = new AutomatoFinito(arquivo2);
-//
-//        if (!a1.isAFD() || !a2.isAFD()) {
-//            throw new IllegalArgumentException("Os autômatos fornecidos devem ser AFDs.");
-//        }
-//
-//        if (!a1.isCompleto()) {
-//            a1.completarAutomato();
-//        }
-//        if (!a2.isCompleto()) {
-//            a2.completarAutomato();
-//        }
-//
-//        Set<String> alfabeto = new LinkedHashSet<>();
-//        for (Transicao t : a1.getTransicoes()) {
-//            if (t.getSimbolo() != null && !t.getSimbolo().isEmpty()) {
-//                alfabeto.add(t.getSimbolo());
-//            }
-//        }
-//        for (Transicao t : a2.getTransicoes()) {
-//            if (t.getSimbolo() != null && !t.getSimbolo().isEmpty()) {
-//                alfabeto.add(t.getSimbolo());
-//            }
-//        }
-//
-//        Estado inicial1 = null;
-//        Estado inicial2 = null;
-//        for (Estado e : a1.getEstados()) {
-//            if (e.isInicial()) { inicial1 = e; break; }
-//        }
-//        for (Estado e : a2.getEstados()) {
-//            if (e.isInicial()) { inicial2 = e; break; }
-//        }
-//        if (inicial1 == null || inicial2 == null) {
-//            throw new IllegalArgumentException("Autômato sem estado inicial.");
-//        }
-//
-//        AutomatoFinito resultado = new AutomatoFinito();
-//
-//        Map<Long, Estado> mapaPares = new HashMap<>();
-//        int proximoId = 0;
-//
-//        long chaveInicial = AutomatoFinito.chavePar(inicial1.getId(), inicial2.getId());
-//        boolean finalInicial = inicial1.isFinal_() ^ inicial2.isFinal_();
-//        Estado estadoInicialProduto = new Estado(
-//                proximoId++,
-//                "q" + inicial1.getId() + "_" + inicial2.getId(),
-//                true,
-//                finalInicial
-//        );
-//        mapaPares.put(chaveInicial, estadoInicialProduto);
-//        resultado.getEstados().add(estadoInicialProduto);
-//
-//        Queue<int[]> fila = new LinkedList<>();
-//        fila.add(new int[]{inicial1.getId(), inicial2.getId()});
-//
-//        while (!fila.isEmpty()) {
-//            int[] par = fila.poll();
-//            int id1 = par[0];
-//            int id2 = par[1];
-//            long chaveAtual = AutomatoFinito.chavePar(id1, id2);
-//            Estado estadoAtual = mapaPares.get(chaveAtual);
-//
-//            for (String simbolo : alfabeto) {
-//                int prox1 = a1.buscarDestino(id1, simbolo);
-//                int prox2 = a2.buscarDestino(id2, simbolo);
-//
-//                if (prox1 == -1 || prox2 == -1) {
-//                    throw new IllegalStateException(
-//                            "Transição ausente em autômato que deveria estar completo.");
-//                }
-//
-//                long chaveProx = AutomatoFinito.chavePar(prox1, prox2);
-//                Estado estadoProx = mapaPares.get(chaveProx);
-//
-//                if (estadoProx == null) {
-//                    Estado e1 = a1.buscarEstadoPorId(prox1);
-//                    Estado e2 = a2.buscarEstadoPorId(prox2);
-//                    boolean finalProx = e1.isFinal_() ^ e2.isFinal_();
-//                    estadoProx = new Estado(
-//                            proximoId++,
-//                            "q" + prox1 + "_" + prox2,
-//                            false,
-//                            finalProx
-//                    );
-//                    mapaPares.put(chaveProx, estadoProx);
-//                    resultado.getEstados().add(estadoProx);
-//                    fila.add(new int[]{prox1, prox2});
-//                }
-//
-//                resultado.getTransicoes().add(
-//                        new Transicao(estadoAtual.getId(), estadoProx.getId(), simbolo)
-//                );
-//            }
-//        }
-//
-//        return resultado;
-//    }
-
     public static AutomatoFinito diferencaSimetrica(File arquivo1, File arquivo2) {
         AutomatoFinito a1 = new AutomatoFinito(arquivo1);
         AutomatoFinito a2 = new AutomatoFinito(arquivo2);
@@ -290,6 +189,8 @@ public class OperacoesAutomato {
             throw new IllegalArgumentException("Autômato sem estado inicial.");
         }
 
+        int idInicial2Original = inicial2.getId();
+
         int maxId1 = 0;
         for (Estado e : a1.getEstados()) {
             if (e.getId() > maxId1) maxId1 = e.getId();
@@ -322,7 +223,7 @@ public class OperacoesAutomato {
         List<Transicao> todasTransicoes = new ArrayList<>(a1.getTransicoes());
         todasTransicoes.addAll(a2.getTransicoes());
         todasTransicoes.add(new Transicao(idNovoInicial, inicial1.getId(), ""));
-        todasTransicoes.add(new Transicao(idNovoInicial, idMap.get(inicial2.getId()), ""));
+        todasTransicoes.add(new Transicao(idNovoInicial, idMap.get(idInicial2Original), ""));
 
         List<Estado> todosEstados = new ArrayList<>(a1.getEstados());
         todosEstados.addAll(a2.getEstados());
@@ -347,6 +248,8 @@ public class OperacoesAutomato {
             throw new IllegalArgumentException("Autômato sem estado inicial.");
         }
 
+        int idInicial2Original = inicial2.getId();
+
         int maxId1 = 0;
         for (Estado e : a1.getEstados()) {
             if (e.getId() > maxId1) maxId1 = e.getId();
@@ -379,7 +282,7 @@ public class OperacoesAutomato {
         List<Transicao> todasTransicoes = new ArrayList<>(a1.getTransicoes());
         todasTransicoes.addAll(a2.getTransicoes());
         todasTransicoes.add(new Transicao(idNovoInicial, inicial1.getId(), ""));
-        todasTransicoes.add(new Transicao(idNovoInicial, idMap.get(inicial2.getId()), ""));
+        todasTransicoes.add(new Transicao(idNovoInicial, idMap.get(idInicial2Original), ""));
 
         List<Estado> todosEstados = new ArrayList<>(a1.getEstados());
         todosEstados.addAll(a2.getEstados());
