@@ -181,4 +181,24 @@ public class AutomatoFinito {
     public Set<String> getAlfabeto() {
         return alfabeto;
     }
+
+    public Estado buscarEstadoPorId(int id) {
+        for (Estado e : estados) {
+            if (e.getId() == id) return e;
+        }
+        return null;
+    }
+
+    public int buscarDestino(int origem, String simbolo) {
+        for (Transicao t : transicoes) {
+            if (t.getDe() == origem && simbolo.equals(t.getSimbolo())) {
+                return t.getPara();
+            }
+        }
+        return -1;
+    }
+
+    public static long chavePar(int id1, int id2) {
+        return ((long) id1 << 32) ^ (id2 & 0xFFFFFFFFL);
+    }
 }

@@ -126,7 +126,7 @@ public class OperacoesAutomato {
         Map<Long, Estado> mapaPares = new HashMap<>();
         int proximoId = 0;
 
-        long chaveInicial = chavePar(inicial1.getId(), inicial2.getId());
+        long chaveInicial = AutomatoFinito.chavePar(inicial1.getId(), inicial2.getId());
         boolean finalInicial = inicial1.isFinal_() ^ inicial2.isFinal_();
         Estado estadoInicialProduto = new Estado(
                 proximoId++,
@@ -144,24 +144,24 @@ public class OperacoesAutomato {
             int[] par = fila.poll();
             int id1 = par[0];
             int id2 = par[1];
-            long chaveAtual = chavePar(id1, id2);
+            long chaveAtual = AutomatoFinito.chavePar(id1, id2);
             Estado estadoAtual = mapaPares.get(chaveAtual);
 
             for (String simbolo : alfabeto) {
-                int prox1 = buscarDestino(a1, id1, simbolo);
-                int prox2 = buscarDestino(a2, id2, simbolo);
+                int prox1 = a1.buscarDestino(id1, simbolo);
+                int prox2 = a2.buscarDestino(id2, simbolo);
 
                 if (prox1 == -1 || prox2 == -1) {
                     throw new IllegalStateException(
                             "Transição ausente em autômato que deveria estar completo.");
                 }
 
-                long chaveProx = chavePar(prox1, prox2);
+                long chaveProx = AutomatoFinito.chavePar(prox1, prox2);
                 Estado estadoProx = mapaPares.get(chaveProx);
 
                 if (estadoProx == null) {
-                    Estado e1 = buscarEstadoPorId(a1, prox1);
-                    Estado e2 = buscarEstadoPorId(a2, prox2);
+                    Estado e1 = a1.buscarEstadoPorId(prox1);
+                    Estado e2 = a2.buscarEstadoPorId(prox2);
                     boolean finalProx = e1.isFinal_() ^ e2.isFinal_();
                     estadoProx = new Estado(
                             proximoId++,
@@ -352,26 +352,6 @@ public class OperacoesAutomato {
     public static AutomatoFinito minimizar(File arquivo) {
         AutomatoFinito automato = new AutomatoFinito(arquivo);
         return new Minimizador().minimizar(automato);
-    }
-
-    private static long chavePar(int id1, int id2) {
-        return ((long) id1 << 32) ^ (id2 & 0xFFFFFFFFL);
-    }
-
-    private static Estado buscarEstadoPorId(AutomatoFinito automato, int id) {
-        for (Estado e : automato.getEstados()) {
-            if (e.getId() == id) return e;
-        }
-        return null;
-    }
-
-    private static int buscarDestino(AutomatoFinito automato, int origem, String simbolo) {
-        for (Transicao t : automato.getTransicoes()) {
-            if (t.getDe() == origem && simbolo.equals(t.getSimbolo())) {
-                return t.getPara();
-            }
-        }
-        return -1;
     }
 
     private static void salvarEmArquivo(AutomatoFinito automato, File arquivo) {
