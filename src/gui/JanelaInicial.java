@@ -43,8 +43,10 @@ public class JanelaInicial extends JDialog {
 
         // ── Rodapé / dica ──────────────────────────────────────────────────────
         JLabel labelDica = new JLabel(
-                "<html><center><i>Complemento, Estrela e Reverso requerem 1 arquivo .jff<br>"
-                        + "Diferença Simétrica e Intersecção requerem 2 arquivos .jff</i></center></html>",
+                "<html><center><i>Operações com 1 arquivo: Complemento, Estrela, Reverso, "
+                        + "Minimização, Conversão AFN→AFD, Homomorfismo<br>"
+                        + "Operações com 2 arquivos: União, Intersecção, Diferença, "
+                        + "Diferença Simétrica, Concatenação</i></center></html>",
                 SwingConstants.CENTER
         );
         labelDica.setFont(new Font("SansSerif", Font.PLAIN, 11));

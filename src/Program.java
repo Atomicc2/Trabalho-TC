@@ -1,5 +1,6 @@
 import entities.AutomatoFinito;
 import entities.Estado;
+import entities.Homomorfismo;
 import entities.OperacoesAutomato;
 import entities.Transicao;
 import gui.JanelaInicial;
@@ -21,7 +22,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Program {
 
@@ -69,7 +72,8 @@ public class Program {
 
     private List<File> selecionarArquivosEntrada(Operacao operacao) {
         if (operacao == Operacao.DIFERENCA_SIMETRICA || operacao == Operacao.INTERSECCAO
-                || operacao == Operacao.UNIAO || operacao == Operacao.DIFERENCA) {
+                || operacao == Operacao.UNIAO || operacao == Operacao.DIFERENCA
+                || operacao == Operacao.CONCATENACAO) {
             return seletorArquivos.selecionarDoisArquivos(null);
         } else {
             File arquivo = seletorArquivos.selecionarUmArquivo(null);
@@ -132,12 +136,54 @@ public class Program {
                 resultadoFinal = OperacoesAutomato.converterAFNParaAFD(arquivosEntrada.getFirst());
             }
 
+            else if (operacao == Operacao.CONCATENACAO) {
+                resultadoFinal = OperacoesAutomato.concatenar(
+                        arquivosEntrada.get(0),
+                        arquivosEntrada.get(1)
+                );
+            }
+
+            else if (operacao == Operacao.HOMOMORFISMO) {
+                String textoMapeamento = JOptionPane.showInputDialog(null,
+                        "Informe o homomorfismo no formato a=01,b=e,c=1\n" +
+                        "Use e, eps, epsilon, lambda ou vazio para epsilon.",
+                        "Homomorfismo", JOptionPane.PLAIN_MESSAGE);
+                if (textoMapeamento == null) return false;
+                resultadoFinal = OperacoesAutomato.homomorfismo(
+                        arquivosEntrada.getFirst(), processarMapeamentoHomomorfismo(textoMapeamento));
+            }
+
             return true;
 
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+    }
+
+    private Map<String, String> processarMapeamentoHomomorfismo(String texto) {
+        Map<String, String> mapeamento = new LinkedHashMap<>();
+        if (texto == null || texto.trim().isEmpty()) return mapeamento;
+
+        String[] entradas = texto.split(",");
+        for (String entrada : entradas) {
+            String trimmed = entrada.trim();
+            if (trimmed.isEmpty()) continue;
+
+            int separador = trimmed.indexOf('=');
+            if (separador < 0) {
+                throw new IllegalArgumentException("Entrada de homomorfismo inválida: " + trimmed);
+            }
+
+            String chave = trimmed.substring(0, separador).trim();
+            String valor = trimmed.substring(separador + 1).trim();
+            if (chave.isEmpty()) {
+                throw new IllegalArgumentException("Símbolo de origem vazio em: " + trimmed);
+            }
+
+            mapeamento.put(chave, Homomorfismo.normalizarImagem(valor));
+        }
+        return mapeamento;
     }
 
     private void salvarResultado(File arquivoDestino) {

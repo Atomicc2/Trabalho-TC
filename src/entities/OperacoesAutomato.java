@@ -41,53 +41,54 @@ public class OperacoesAutomato {
         return automato;
     }
 
-    public static AutomatoFinito estrela(File arquivo){
-        AutomatoFinito automato = new AutomatoFinito(arquivo);
+public static AutomatoFinito estrela(File arquivo){
+    AutomatoFinito automato = new AutomatoFinito(arquivo);
 
-        int idAntigoInic = -1;
-        ArrayList<Integer> idAntigoFinal = new ArrayList<>();
+    int idAntigoInic = -1;
+    ArrayList<Integer> idAntigoFinal = new ArrayList<>();
 
-        for (Estado estado : automato.getEstados()) {
-            if(estado.isInicial()){
-                idAntigoInic = estado.getId();
-                estado.setInicial(false);
-                break;
-            }
+    for (Estado estado : automato.getEstados()) {
+        if(estado.isInicial()){
+            idAntigoInic = estado.getId();
+            estado.setInicial(false);
+            break;
         }
-
-        for (Estado estado : automato.getEstados()) {
-            if(estado.isFinal_()){
-                idAntigoFinal.add(estado.getId());
-                estado.setFinal_(false);
-            }
-        }
-
-        int idNovoInicio = 0;
-
-        for (Estado estado : automato.getEstados()) {
-            if (estado.getId() > idNovoInicio) {
-                idNovoInicio = estado.getId();
-            }
-        }
-
-        idNovoInicio = idNovoInicio + 1;
-        int idNovoFinal = idNovoInicio + 1;
-
-        Estado novoInicial = new Estado(idNovoInicio, "novoInicial", true, false);
-        automato.getTransicoes().add(new Transicao(idNovoInicio, idAntigoInic, ""));
-        automato.getTransicoes().add(new Transicao(idNovoInicio, idNovoFinal, ""));
-        automato.getEstados().add(novoInicial);
-
-        Estado novoFinal = new Estado(idNovoFinal , "novoFinal", false, true);
-        automato.getEstados().add(novoFinal);
-
-        for (int id : idAntigoFinal) {
-            automato.getTransicoes().add(new Transicao(id, idNovoFinal, ""));
-            automato.getTransicoes().add(new Transicao(id, idAntigoInic, ""));
-        }
-
-        return automato;
     }
+
+    for (Estado estado : automato.getEstados()) {
+        if(estado.isFinal_()){
+            idAntigoFinal.add(estado.getId());
+            estado.setFinal_(false);
+        }
+    }
+
+    int idNovoInicio = 0;
+
+    for (Estado estado : automato.getEstados()) {
+        if (estado.getId() > idNovoInicio) {
+            idNovoInicio = estado.getId();
+        }
+    }
+
+    idNovoInicio = idNovoInicio + 1;
+    int idNovoFinal = idNovoInicio + 1;
+
+    Estado novoInicial = new Estado(idNovoInicio, "novoInicial", true, false);
+    automato.getEstados().add(novoInicial);
+
+    Estado novoFinal = new Estado(idNovoFinal , "novoFinal", false, true);
+    automato.getEstados().add(novoFinal);
+
+    automato.getTransicoes().add(new Transicao(idNovoInicio, idAntigoInic, ""));
+    automato.getTransicoes().add(new Transicao(idNovoInicio, idNovoFinal, ""));
+
+    for (int id : idAntigoFinal) {
+        automato.getTransicoes().add(new Transicao(id, idNovoFinal, ""));
+        automato.getTransicoes().add(new Transicao(id, idAntigoInic, ""));
+    }
+
+    return automato;
+}
 
     public static AutomatoFinito diferencaSimetrica(File arquivo1, File arquivo2) {
         AutomatoFinito a1 = new AutomatoFinito(arquivo1);
@@ -383,5 +384,24 @@ public class OperacoesAutomato {
     public static AutomatoFinito converterAFNParaAFD(File arquivo) {
         AutomatoFinito automato = new AutomatoFinito(arquivo);
         return new ConversorAFNparaAFD().converter(automato);
+    }
+
+    public static AutomatoFinito concatenar(File arquivo1, File arquivo2) {
+        AutomatoFinito a1 = new AutomatoFinito(arquivo1);
+        AutomatoFinito a2 = new AutomatoFinito(arquivo2);
+        return new Concatenador().concatenar(a1, a2);
+    }
+
+    public static AutomatoFinito concatenar(AutomatoFinito a1, AutomatoFinito a2) {
+        return new Concatenador().concatenar(a1, a2);
+    }
+
+    public static AutomatoFinito homomorfismo(File arquivo, Map<String, String> mapeamento) {
+        AutomatoFinito automato = new AutomatoFinito(arquivo);
+        return new Homomorfismo().aplicar(automato, mapeamento);
+    }
+
+    public static AutomatoFinito homomorfismo(AutomatoFinito automato, Map<String, String> mapeamento) {
+        return new Homomorfismo().aplicar(automato, mapeamento);
     }
 }

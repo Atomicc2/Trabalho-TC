@@ -2,15 +2,17 @@ package gui.enums;
 
 public enum Operacao {
 
+    UNIAO("União"),
+    DIFERENCA("Diferença"),
+    INTERSECCAO("Intersecção"),
+    REVERSO("Reverso"),
+    CONCATENACAO("Concatenação"),
+    HOMOMORFISMO("Homomorfismo"),
     COMPLEMENTO("Complemento"),
     ESTRELA("Estrela"),
     DIFERENCA_SIMETRICA("Diferença Simétrica"),
-    INTERSECCAO("Intersecção"),
-    REVERSO("Reverso"),
-    UNIAO("União"),
-    DIFERENCA("Diferença"),
-    MINIMIZACAO("Minimização"),
-    CONVERSAO_AFN_AFD("Conversão AFN → AFD");
+    CONVERSAO_AFN_AFD("Conversão AFN → AFD"),
+    MINIMIZACAO("Minimização");
 
     private final String descricao;
 
