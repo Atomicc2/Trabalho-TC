@@ -177,4 +177,8 @@ public class AutomatoFinito {
     public List<Transicao> getTransicoes() {
         return transicoes;
     }
+
+    public Set<String> getAlfabeto() {
+        return alfabeto;
+    }
 }

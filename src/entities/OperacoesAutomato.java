@@ -22,12 +22,12 @@ public class OperacoesAutomato {
             throw new IllegalArgumentException("O autômato fornecido não é um AFD.");
         }
 
-        for (Estado estado : automato.getEstados()) {
-            estado.setFinal_(!estado.isFinal_());
-        }
-
         if (!automato.isCompleto()) {
             automato.completarAutomato();
+        }
+
+        for (Estado estado : automato.getEstados()) {
+            estado.setFinal_(!estado.isFinal_());
         }
 
         return automato;
@@ -347,6 +347,11 @@ public class OperacoesAutomato {
         }
 
         return automato;
+    }
+
+    public static AutomatoFinito minimizar(File arquivo) {
+        AutomatoFinito automato = new AutomatoFinito(arquivo);
+        return new Minimizador().minimizar(automato);
     }
 
     private static long chavePar(int id1, int id2) {

@@ -8,7 +8,8 @@ public enum Operacao {
     INTERSECCAO("Intersecção"),
     REVERSO("Reverso"),
     UNIAO("União"),
-    DIFERENCA("Diferença");
+    DIFERENCA("Diferença"),
+    MINIMIZACAO("Minimização");
 
     private final String descricao;
 

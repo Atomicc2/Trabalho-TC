@@ -124,6 +124,10 @@ public class Program {
                 );
             }
 
+            else if (operacao == Operacao.MINIMIZACAO) {
+                resultadoFinal = OperacoesAutomato.minimizar(arquivosEntrada.getFirst());
+            }
+
             return true;
 
         } catch (IllegalArgumentException e) {
