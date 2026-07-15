@@ -10,6 +10,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.swing.*;
+import java.awt.GridLayout;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Program {
 
@@ -144,13 +146,10 @@ public class Program {
             }
 
             else if (operacao == Operacao.HOMOMORFISMO) {
-                String textoMapeamento = JOptionPane.showInputDialog(null,
-                        "Informe o homomorfismo no formato a=01,b=e,c=1\n" +
-                        "Use e, eps, epsilon, lambda ou vazio para epsilon.",
-                        "Homomorfismo", JOptionPane.PLAIN_MESSAGE);
-                if (textoMapeamento == null) return false;
-                resultadoFinal = OperacoesAutomato.homomorfismo(
-                        arquivosEntrada.getFirst(), processarMapeamentoHomomorfismo(textoMapeamento));
+                AutomatoFinito automato = new AutomatoFinito(arquivosEntrada.getFirst());
+                Map<String, String> mapeamento = mostrarDialogoHomomorfismo(automato.getAlfabeto());
+                if (mapeamento == null) return false;
+                resultadoFinal = OperacoesAutomato.homomorfismo(automato, mapeamento);
             }
 
             return true;
@@ -161,27 +160,27 @@ public class Program {
         }
     }
 
-    private Map<String, String> processarMapeamentoHomomorfismo(String texto) {
+    private Map<String, String> mostrarDialogoHomomorfismo(Set<String> alfabeto) {
+        if (alfabeto.isEmpty()) return new LinkedHashMap<>();
+
+        JPanel painel = new JPanel(new GridLayout(alfabeto.size(), 2, 8, 8));
+        Map<String, JTextField> campos = new LinkedHashMap<>();
+
+        for (String simbolo : alfabeto) {
+            painel.add(new JLabel("h(" + simbolo + "):"));
+            JTextField campo = new JTextField(12);
+            painel.add(campo);
+            campos.put(simbolo, campo);
+        }
+
+        int resultado = JOptionPane.showConfirmDialog(null, painel,
+                "Defina o Homomorfismo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (resultado != JOptionPane.OK_OPTION) return null;
+
         Map<String, String> mapeamento = new LinkedHashMap<>();
-        if (texto == null || texto.trim().isEmpty()) return mapeamento;
-
-        String[] entradas = texto.split(",");
-        for (String entrada : entradas) {
-            String trimmed = entrada.trim();
-            if (trimmed.isEmpty()) continue;
-
-            int separador = trimmed.indexOf('=');
-            if (separador < 0) {
-                throw new IllegalArgumentException("Entrada de homomorfismo inválida: " + trimmed);
-            }
-
-            String chave = trimmed.substring(0, separador).trim();
-            String valor = trimmed.substring(separador + 1).trim();
-            if (chave.isEmpty()) {
-                throw new IllegalArgumentException("Símbolo de origem vazio em: " + trimmed);
-            }
-
-            mapeamento.put(chave, Homomorfismo.normalizarImagem(valor));
+        for (Map.Entry<String, JTextField> entry : campos.entrySet()) {
+            mapeamento.put(entry.getKey(), Homomorfismo.normalizarImagem(entry.getValue().getText()));
         }
         return mapeamento;
     }
