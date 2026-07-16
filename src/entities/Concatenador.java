@@ -34,6 +34,9 @@ public class Concatenador {
             }
         }
 
+        for (String s : a.getAlfabeto()) resultado.getAlfabeto().add(s);
+        for (String s : b.getAlfabeto()) resultado.getAlfabeto().add(s);
+
         return resultado;
     }
 

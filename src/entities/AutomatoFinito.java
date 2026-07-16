@@ -21,6 +21,11 @@ public class AutomatoFinito {
     public AutomatoFinito(List<Estado> estados, List<Transicao> transicoes) {
         this.estados = estados;
         this.transicoes = transicoes;
+        for (Transicao t : transicoes) {
+            if (t.getSimbolo() != null && !t.getSimbolo().isEmpty()) {
+                this.alfabeto.add(t.getSimbolo());
+            }
+        }
     }
 
     public AutomatoFinito(AutomatoFinito a) {

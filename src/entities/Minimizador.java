@@ -26,10 +26,13 @@ public class Minimizador {
 
     public AutomatoFinito minimizar(AutomatoFinito automato) {
 
-        completarAlfabeto(automato);
-        completarAutomato(automato);
+        if (!automato.isAFD()) {
+            automato = new ConversorAFNparaAFD().converter(automato);
+        }
 
+        completarAlfabeto(automato);
         removerEstadosInuteis(automato);
+        completarAutomato(automato);
 
         if (automato.getEstados().size() <= 1) {
             System.out.println("Automato com um estado apos limpeza, nada a minimizar.");
