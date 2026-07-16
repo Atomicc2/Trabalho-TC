@@ -8,6 +8,14 @@ public class ConversorAFNparaAFD {
         // AFD que sera construido
         AutomatoFinito afd = new AutomatoFinito();
 
+        boolean temInicial = false;
+        for (Estado e : afn.getEstados()) {
+            if (e.isInicial()) { temInicial = true; break; }
+        }
+        if (!temInicial) {
+            throw new IllegalArgumentException("Autômato sem estado inicial.");
+        }
+
         // Copia apenas os simbolos validos (ignora epsilon) para o alfabeto do AFD
         for (String s : afn.getAlfabeto()) {
             if (s != null && !s.isEmpty()) {

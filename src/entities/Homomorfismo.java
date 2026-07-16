@@ -31,7 +31,7 @@ public class Homomorfismo {
                         "Falta definir h(" + simbolo + ") no homomorfismo.");
             }
 
-            String imagem = mapeamento.get(simbolo);
+            String imagem = normalizarImagem(mapeamento.get(simbolo));
             if (imagem.isEmpty()) {
                 resultado.getTransicoes().add(new Transicao(t.getDe(), t.getPara(), ""));
                 continue;
@@ -49,6 +49,12 @@ public class Homomorfismo {
 
                 resultado.getTransicoes().add(new Transicao(atual, proximo, ch));
                 atual = proximo;
+            }
+        }
+
+        for (Transicao t : resultado.getTransicoes()) {
+            if (t.getSimbolo() != null && !t.getSimbolo().isEmpty()) {
+                resultado.getAlfabeto().add(t.getSimbolo());
             }
         }
 

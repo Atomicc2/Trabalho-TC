@@ -9,7 +9,7 @@ public class OperacoesAutomato {
         AutomatoFinito automato = new AutomatoFinito(arquivo);
 
         if (!automato.isAFD()) {
-            throw new IllegalArgumentException("O autômato fornecido não é um AFD.");
+            automato = new ConversorAFNparaAFD().converter(automato);
         }
 
         if (!automato.isCompleto()) {
@@ -27,7 +27,7 @@ public class OperacoesAutomato {
         AutomatoFinito automato = new AutomatoFinito(a);
 
         if (!automato.isAFD()) {
-            throw new IllegalArgumentException("O autômato fornecido não é um AFD.");
+            automato = new ConversorAFNparaAFD().converter(automato);
         }
 
         if (!automato.isCompleto()) {
@@ -106,6 +106,13 @@ public static AutomatoFinito estrela(File arquivo){
         AutomatoFinito a1 = new AutomatoFinito(arquivo1);
         AutomatoFinito a2 = new AutomatoFinito(arquivo2);
 
+        if (!a1.isAFD()) {
+            a1 = new ConversorAFNparaAFD().converter(a1);
+        }
+        if (!a2.isAFD()) {
+            a2 = new ConversorAFNparaAFD().converter(a2);
+        }
+
         if (a1.temTransicaoVazia() || a2.temTransicaoVazia()) {
             throw new IllegalArgumentException("A intersecção não aceita autômatos com transições vazias.");
         }
@@ -147,6 +154,13 @@ public static AutomatoFinito estrela(File arquivo){
     public static AutomatoFinito interseccao(AutomatoFinito automato1, AutomatoFinito automato2) {
         AutomatoFinito a1 = new AutomatoFinito(automato1);
         AutomatoFinito a2 = new AutomatoFinito(automato2);
+
+        if (!a1.isAFD()) {
+            a1 = new ConversorAFNparaAFD().converter(a1);
+        }
+        if (!a2.isAFD()) {
+            a2 = new ConversorAFNparaAFD().converter(a2);
+        }
 
         if (a1.temTransicaoVazia() || a2.temTransicaoVazia()) {
             throw new IllegalArgumentException("A intersecção não aceita autômatos com transições vazias.");
@@ -313,7 +327,10 @@ public static AutomatoFinito estrela(File arquivo){
         AutomatoFinito a2 = new AutomatoFinito(arquivo2);
 
         if (!a1.isAFD()) {
-            throw new IllegalArgumentException("O primeiro autômato não é um AFD.");
+            a1 = new ConversorAFNparaAFD().converter(a1);
+        }
+        if (!a2.isAFD()) {
+            a2 = new ConversorAFNparaAFD().converter(a2);
         }
 
         AutomatoFinito complementado = complemento(a2);
@@ -326,7 +343,10 @@ public static AutomatoFinito estrela(File arquivo){
         AutomatoFinito a2 = new AutomatoFinito(automato2);
 
         if (!a1.isAFD()) {
-            throw new IllegalArgumentException("O primeiro autômato não é um AFD.");
+            a1 = new ConversorAFNparaAFD().converter(a1);
+        }
+        if (!a2.isAFD()) {
+            a2 = new ConversorAFNparaAFD().converter(a2);
         }
 
         AutomatoFinito complementado = complemento(a2);
