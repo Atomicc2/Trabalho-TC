@@ -311,26 +311,38 @@ public static AutomatoFinito estrela(File arquivo){
     public static AutomatoFinito diferenca(File arquivo1, File arquivo2) {
         AutomatoFinito a1 = new AutomatoFinito(arquivo1);
         AutomatoFinito a2 = new AutomatoFinito(arquivo2);
-
-        if (!a1.isAFD()) {
-            throw new IllegalArgumentException("O primeiro autômato não é um AFD.");
+        if(!a1.isCompleto()) {
+            a1.completarAutomato();
         }
-
+        if(!a2.isCompleto()) {
+            a2.completarAutomato();
+        }
+        if (!a1.isAFD()) {
+            a1 = new ConversorAFNparaAFD().converter(a1);
+        }
+        if (!a2.isAFD()) {
+            a2 = new ConversorAFNparaAFD().converter(a2);
+        }
         AutomatoFinito complementado = complemento(a2);
-
         return interseccao(a1, complementado);
     }
 
     public static AutomatoFinito diferenca(AutomatoFinito automato1, AutomatoFinito automato2) {
         AutomatoFinito a1 = new AutomatoFinito(automato1);
         AutomatoFinito a2 = new AutomatoFinito(automato2);
-
-        if (!a1.isAFD()) {
-            throw new IllegalArgumentException("O primeiro autômato não é um AFD.");
+        if(!a1.isCompleto()) {
+            a1.completarAutomato();
         }
-
+        if(!a2.isCompleto()) {
+            a2.completarAutomato();
+        }
+        if (!a1.isAFD()) {
+            a1 = new ConversorAFNparaAFD().converter(a1);
+        }
+        if (!a2.isAFD()) {
+            a2 = new ConversorAFNparaAFD().converter(a2);
+        }
         AutomatoFinito complementado = complemento(a2);
-
         return interseccao(a1, complementado);
     }
 
